@@ -30,6 +30,7 @@ pipeline {
         stage('Manual Approve'){
             steps{
                  input message: 'Lanjut ke tahap Deploy? (Klik "Proceed" untuk melanjutkan tahap deploy)'
+                 output message: '(Atau klik  "Abort" untuk memberhentikan pipeline)'
             }
         }
         stage('Deploy') {
@@ -48,7 +49,7 @@ pipeline {
                         success {
                             archiveArtifacts "${env.BUILD_ID}/sources/dist/add2vals"
                             sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
-                            sleep(1m)
+                            sleep(time: 60, unit: "SECONDS")
                         }
                     }
         }
