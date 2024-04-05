@@ -48,7 +48,7 @@ pipeline {
                         success {
                             archiveArtifacts "${env.BUILD_ID}/sources/dist/add2vals"
                             sh "docker run --rm -v ${VOLUME} ${IMAGE} 'rm -rf build dist'"
-                            sleep(1000)
+                            sleep(1m)
                         }
                     }
         }
