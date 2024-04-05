@@ -30,6 +30,7 @@ pipeline {
         stage('Manual Approve'){
             steps{
                  input message: 'Lanjut ke tahap Deploy? (Klik "Proceed" untuk melanjutkan tahap deploy)'
+            }
         }
         stage('Deploy') {
                     agent any
