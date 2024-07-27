@@ -37,16 +37,19 @@ pipeline {
                 input message: 'Lanjutkan ke tahap Deploy?'
             }
         }
-        stage("Deploy") {
+         stage('Deploy') {
             agent {
                 docker {
-                    image 'python:2-alpine'
+                    image 'cdrx/pyinstaller-linux:python2'
                 }
             }
             steps {
-                sh './jenkins/scripts/deliver.sh'
-                sleep 60
-                sh './jenkins/scripts/kill.sh' 
+                sh 'pyinstaller --onefile sources/add2vals.py'
+            }
+            post {
+                success {
+                    archiveArtifacts 'dist/add2vals'
+                }
             }
         }
     }
