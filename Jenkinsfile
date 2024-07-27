@@ -9,36 +9,44 @@ pipeline {
             }
             steps {
                 sh 'python -m py_compile sources/add2vals.py sources/calc.py'
+                stash(name: 'compiled-results', includes: 'sources/*.py*')
             }
         }
-        stage('Test') {
+        stage('Test') { 
             agent {
                 docker {
-                    image 'qnib/pytest'
+                    image 'qnib/pytest' 
                 }
             }
             steps {
-                sh 'py.test --verbose --junit-xml test-reports/results.xml sources/test_calc.py'
+                sh 'py.test --junit-xml test-reports/results.xml sources/test_calc.py' 
             }
             post {
                 always {
-                    junit 'test-reports/results.xml'
+                    junit 'test-reports/results.xml' 
                 }
             }
         }
-        stage('Deliver') {
+        stage("Manual Approval") {
             agent {
                 docker {
-                    image 'cdrx/pyinstaller-linux:python2'
+                    image 'python:2-alpine'
                 }
             }
             steps {
-                sh 'pyinstaller --onefile sources/add2vals.py'
+                input message: 'Lanjutkan ke tahap Deploy?'
             }
-            post {
-                success {
-                    archiveArtifacts 'dist/add2vals'
+        }
+        stage("Deploy") {
+            agent {
+                docker {
+                    image 'python:2-alpine'
                 }
+            }
+            steps {
+                sh './jenkins/scripts/deliver.sh'
+                sleep 60
+                sh './jenkins/scripts/kill.sh' 
             }
         }
     }
